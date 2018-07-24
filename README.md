@@ -11,14 +11,17 @@ This program allows to customize banner and uniform colors of every faction in t
 
 ## Tips
 1) You can use the search box to search for a a faction, or to select all factions of the same tipe (by putting the minus sign '-' before the 3 letters):
+
 <p align="center">
 <img src="https://i.imgur.com/YPpRSvz.gif">
 </p>
-It's also possible to select only the edited factions by writing '*' in the search box.
+
+  It's also possible to select only the edited factions by writing '*' in the search box.
 
 2) You can drag and drop a faction from the left into your currently selected faction to copy its color values:
+
 <p align="center">
-<img src="https://i.imgur.com/12KK5Wk.gif>
+<img src="https://i.imgur.com/12KK5Wk.gif">
 </p>
 
 ## How it works
