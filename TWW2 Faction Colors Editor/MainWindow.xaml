@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:TWW2_Faction_Colors_Editor"
         x:Name="window" x:Class="TWW2_Faction_Colors_Editor.MainWindow"
         mc:Ignorable="d"
-        Title="Total War Warhammer II Faction Colors Editor" Height="468.296" Width="517.199" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#333333" WindowStyle="SingleBorderWindow" Foreground="#FFC5C5C5">
+        Title="Total War Warhammer II Faction Colors Editor" DataContext="{Binding RelativeSource={RelativeSource Self}}" Height="468.296" Width="517.199" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#333333" WindowStyle="SingleBorderWindow" Foreground="#FFC5C5C5">
 
     <Window.Resources>
         <Storyboard x:Key="SavedAnimationIn">
@@ -53,28 +53,28 @@
             <RowDefinition Height="406*"/>
             <RowDefinition Height="32*"/>
         </Grid.RowDefinitions>
-        <GroupBox x:Name="bannerGroupBox" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" Header="Banner" HorizontalAlignment="Left" Margin="240,43,0,0" Width="270" Height="163" VerticalAlignment="Top" Grid.Row="2" Foreground="{DynamicResource TextColor}">
+        <GroupBox x:Name="bannerGroupBox" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" Header="Banner" HorizontalAlignment="Left" Margin="240,45,0,0" Width="270" Height="170" VerticalAlignment="Top" Grid.Row="2" Foreground="{DynamicResource TextColor}">
             <Grid Margin="0" Background="Transparent">
-                <xctk:ColorPicker x:Name="bannerPrimaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" Margin="72,5,0,0" ShowTabHeaders="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Closed="bannersColorPicker_changedColor" />
-                <xctk:ColorPicker x:Name="bannerSecondaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Margin="72,40,0,0" ShowTabHeaders="False" Closed="bannersColorPicker_changedColor" />
-                <xctk:ColorPicker x:Name="bannerTertiaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Margin="72,75,0,0" ShowTabHeaders="False" Closed="bannersColorPicker_changedColor" />
-                <Button x:Name="buttonVanillaBanner" Content="Vanilla" HorizontalAlignment="Left" Margin="133,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonVanillaBanner_Click"/>
-                <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Primary" VerticalAlignment="Top"/>
-                <TextBlock HorizontalAlignment="Left" Margin="10,46,0,0" TextWrapping="Wrap" Text="Secondary" VerticalAlignment="Top"/>
-                <TextBlock HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" Text="Tertiary" VerticalAlignment="Top"/>
-                <Button x:Name="buttonUndoBanner" Content="Undo changes" HorizontalAlignment="Left" Margin="9,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonUndoBanner_Click"/>
+                <xctk:ColorPicker x:Name="bannerPrimaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" Margin="72,6,0,0" ShowTabHeaders="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Closed="bannersColorPicker_changedColor" />
+                <xctk:ColorPicker x:Name="bannerSecondaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Margin="72,42,0,0" ShowTabHeaders="False" Closed="bannersColorPicker_changedColor" />
+                <xctk:ColorPicker x:Name="bannerTertiaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Margin="72,78,0,0" ShowTabHeaders="False" Closed="bannersColorPicker_changedColor" />
+                <Button x:Name="buttonVanillaBanner" Content="Vanilla values" HorizontalAlignment="Left" Margin="133,115,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonVanillaBanner_Click"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,11,0,0" TextWrapping="Wrap" Text="Primary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,48,0,0" TextWrapping="Wrap" Text="Secondary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,83,0,0" TextWrapping="Wrap" Text="Tertiary" VerticalAlignment="Top"/>
+                <Button x:Name="buttonUndoBanner" Content="Undo all changes" HorizontalAlignment="Left" Margin="9,115,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonUndoBanner_Click" ToolTip="Undo all changes until the last save event"/>
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="uniformGroupBox" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" Header="Uniforms" HorizontalAlignment="Left" Margin="240,212,0,0" Width="270" Grid.Row="2" Height="163" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}">
+        <GroupBox x:Name="uniformGroupBox" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" Header="Uniforms" HorizontalAlignment="Left" Margin="240,223,0,0" Width="270" Grid.Row="2" Height="170" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}" Grid.RowSpan="2">
             <Grid Background="Transparent" Margin="0">
-                <xctk:ColorPicker x:Name="uniformsPrimaryColorPicker" HorizontalAlignment="Left" Margin="72,5,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor" />
-                <xctk:ColorPicker x:Name="uniformsSecondaryColorPicker" HorizontalAlignment="Left" Margin="72,40,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor"/>
-                <xctk:ColorPicker x:Name="uniformsTertiaryColorPicker" HorizontalAlignment="Left" Margin="72,75,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor" />
-                <Button x:Name="buttonVanillaUniforms" Content="Vanilla" HorizontalAlignment="Left" Margin="132,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonVanillaUniforms_Click"/>
-                <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Primary" VerticalAlignment="Top"/>
-                <TextBlock HorizontalAlignment="Left" Margin="10,46,0,0" TextWrapping="Wrap" Text="Secondary" VerticalAlignment="Top"/>
-                <TextBlock HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" Text="Tertiary" VerticalAlignment="Top"/>
-                <Button x:Name="buttonUndoUniforms" Content="Undo changes" HorizontalAlignment="Left" Margin="9,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonUndoUniforms_Click"/>
+                <xctk:ColorPicker x:Name="uniformsPrimaryColorPicker" HorizontalAlignment="Left" Margin="72,6,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor" />
+                <xctk:ColorPicker x:Name="uniformsSecondaryColorPicker" HorizontalAlignment="Left" Margin="72,42,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor"/>
+                <xctk:ColorPicker x:Name="uniformsTertiaryColorPicker" HorizontalAlignment="Left" Margin="72,78,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor" />
+                <Button x:Name="buttonVanillaUniforms" Content="Vanilla values" HorizontalAlignment="Left" Margin="132,115,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonVanillaUniforms_Click"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,11,0,0" TextWrapping="Wrap" Text="Primary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,48,0,0" TextWrapping="Wrap" Text="Secondary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,83,0,0" TextWrapping="Wrap" Text="Tertiary" VerticalAlignment="Top"/>
+                <Button x:Name="buttonUndoUniforms" Content="Undo all changes" HorizontalAlignment="Left" Margin="9,115,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonUndoUniforms_Click" ToolTip="Undo all changes until the last save event"/>
             </Grid>
         </GroupBox>
         <Grid Grid.Row="1" Background="#FF212020" MouseDown="Grid_MouseDown">

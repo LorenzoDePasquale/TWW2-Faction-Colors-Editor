@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Filetypes;
 
 namespace TWW2_Faction_Colors_Editor
@@ -14,17 +13,7 @@ namespace TWW2_Faction_Colors_Editor
                 DBFileHeader header = PackedFileDbCodec.readHeader(reader);
                 if (data != null && header != null)
                 {
-                    if (DBTypeMap.Instance.IsSupported(typeName))
-                    {
-                        try
-                        {
-                            decoded = new PackedFileDbCodec(typeName).Decode(data);
-                        }
-                        catch
-                        {
-                            List<TypeInfo> infos = DBTypeMap.Instance.GetVersionedInfos(typeName, header.Version);
-                        }
-                    }
+                    decoded = new PackedFileDbCodec(typeName).Decode(data);
                 }
             }
             return decoded;

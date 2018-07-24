@@ -26,14 +26,9 @@ namespace TWW2_Faction_Colors_Editor
             (ImageSource, Name, Index, _modified) = (BitmapToBitmapSource(bitmap), name, index, modified);
         }
 
-
         private BitmapSource BitmapToBitmapSource(Bitmap source)
         {
-            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                          source.GetHbitmap(),
-                          IntPtr.Zero,
-                          Int32Rect.Empty,
-                          BitmapSizeOptions.FromEmptyOptions());
+            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(source.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
         }
     }
 }

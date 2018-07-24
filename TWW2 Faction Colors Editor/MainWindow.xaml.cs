@@ -22,7 +22,7 @@ namespace TWW2_Faction_Colors_Editor
     {
         PackFile packFile;
         PackFileCodec codec = new PackFileCodec();
-        DBFile bannerTables, uniformsTables, vanillaBannersTables, vanillaUniformsTables;
+        DBFile bannerTables, uniformsTables, vanillaBannersTables, vanillaUniformsTables, currentBannerTables, currentUniformsTables;
         Dictionary<string, string> factionNames;
         ObservableCollection<FactionItem> factions;
         CollectionViewSource factionsCollection;
@@ -103,8 +103,6 @@ namespace TWW2_Faction_Colors_Editor
                     e.Accepted = f.Name.ToUpper().Contains(FilterText.ToUpper());
             };
 
-            DataContext = this;
-
             gamePath = GetGamePath();
             if (gamePath is null)
             {
@@ -126,10 +124,11 @@ namespace TWW2_Faction_Colors_Editor
             packFile = codec.Open("vanilla.pack");
             vanillaBannersTables = DBDecoder.Decode("faction_banners_tables", packFile.Files[0].Data);
             vanillaUniformsTables = DBDecoder.Decode("faction_uniform_colours_tables", packFile.Files[1].Data);
-
             packFile = codec.Open("faction_colors.pack");
             bannerTables = DBDecoder.Decode("faction_banners_tables", packFile.Files[0].Data);
             uniformsTables = DBDecoder.Decode("faction_uniform_colours_tables", packFile.Files[1].Data);
+            currentBannerTables = DBDecoder.Decode("faction_banners_tables", packFile.Files[0].Data);
+            currentUniformsTables = DBDecoder.Decode("faction_uniform_colours_tables", packFile.Files[1].Data);
 
             factionNames = new Dictionary<string, string>();
             foreach (var line in File.ReadAllLines("source.txt"))
@@ -153,54 +152,15 @@ namespace TWW2_Faction_Colors_Editor
             temp.ForEach(x => factions.Add(x));
         }
 
-        private string GetGamePath()
-        {
-            RegistryKey regKey = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
-            if (regKey != null)
-            {
-                string steamPath = regKey.GetValue("SteamPath").ToString();
-                //Get a list of all steam library folder
-                string[] configFile = File.ReadAllLines(Path.Combine(steamPath, "config\\config.vdf"));
-                List<string> steamLibraryPaths = new List<string>();
-                steamLibraryPaths.Add(steamPath.Replace("/", "\\"));
-                foreach (var item in configFile)
-                {
-                    if (item.Contains("BaseInstallFolder"))
-                    {
-                        steamLibraryPaths.Add(item.Split(new char[] { '"' })[3].Replace("\"", "").Replace("\\\\", "\\"));
-                    }
-                }
-                //Get a list of all installed Steam games
-                foreach (var libraryPath in steamLibraryPaths)
-                {
-                    foreach (var directory in Directory.GetDirectories(Path.Combine(libraryPath, "SteamApps\\common")))
-                    {
-                        if (directory.EndsWith("Total War WARHAMMER II")) return directory;
-                    }
-                }
-            }
-            return null;
-        }
-
-        private bool HasWriteAccessToFolder(string folderPath)
-        {
-            try
-            {
-                System.Security.AccessControl.DirectorySecurity ds = Directory.GetAccessControl(folderPath);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-        }
-
         private void buttonSave_Click(object sender, RoutedEventArgs e)
         {
             packFile.Files[0].Data = DBDecoder.Encode("faction_banners_tables", bannerTables);
             packFile.Files[1].Data = DBDecoder.Encode("faction_uniform_colours_tables", uniformsTables);
             codec.Save(packFile);
             if (checkBoxEnable.IsEnabled) File.Copy("faction_colors.pack", gamePath + "\\data\\faction_colors.pack", true);
+
+            currentBannerTables = DBDecoder.Decode("faction_banners_tables", packFile.Files[0].Data);
+            currentUniformsTables = DBDecoder.Decode("faction_uniform_colours_tables", packFile.Files[1].Data);
 
             Storyboard storyboardIn = FindResource("SavedAnimationIn") as Storyboard;
             Storyboard.SetTarget(storyboardIn, labelSaved);
@@ -287,7 +247,6 @@ namespace TWW2_Faction_Colors_Editor
             if (!colorChanged) return;
 
             int index = selectedFaction.Index;
-
             byte[] values = bannerTables.Entries[index].Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
             undoStack.Push((values, "banner"));
             redoStack.Clear();
@@ -300,7 +259,6 @@ namespace TWW2_Faction_Colors_Editor
             if (!colorChanged) return;
 
             int index = selectedFaction.Index;
-
             byte[] values = uniformsTables.Entries[index].Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
             undoStack.Push((values, "uniforms"));
             redoStack.Clear();
@@ -338,40 +296,44 @@ namespace TWW2_Faction_Colors_Editor
 
         private void buttonUndoBanner_Click(object sender, RoutedEventArgs e)
         {
-            var action = undoStack.LastOrDefault(x => x.Item2 == "banner");
-            if (action != default((byte[], string)))
-            {
-                colorChanged = true;
-                byte[] currentValues = bannerTables.Entries[selectedFaction.Index].Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
-                undoStack.Push((currentValues, "banner"));
+            colorChanged = false;
+            FactionItem item = (FactionItem)factionsListView.SelectedItem;
 
-                byte[] colorValues = action.Item1.Take(9).ToArray();
-                bannerPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[2], colorValues[1], colorValues[0]);
-                bannerSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[5], colorValues[4], colorValues[3]);
-                bannerTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[8], colorValues[7], colorValues[6]);
+            DBRow row = currentBannerTables.Entries[item.Index];
+            byte[] colorValues = row.Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
+            bannerPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[2], colorValues[1], colorValues[0]);
+            bannerSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[5], colorValues[4], colorValues[3]);
+            bannerTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[8], colorValues[7], colorValues[6]);
 
-                ColorsToBannerTables(selectedFaction.Index, bannerPrimaryColorPicker.SelectedColor.Value, bannerSecondaryColorPicker.SelectedColor.Value, bannerTertiaryColorPicker.SelectedColor.Value);
-                colorChanged = false;
-            }
+            colorChanged = true;
+            ColorsToBannerTables(selectedFaction.Index, bannerPrimaryColorPicker.SelectedColor.Value, bannerSecondaryColorPicker.SelectedColor.Value, bannerTertiaryColorPicker.SelectedColor.Value);
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedFactionImage"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedFactionName"));
+
+            undoStack.Clear();
+            redoStack.Clear();
         }
 
         private void buttonUndoUniforms_Click(object sender, RoutedEventArgs e)
         {
-            var action = undoStack.LastOrDefault(x => x.Item2 == "uniforms");
-            if (action != default((byte[], string)))
-            {
-                colorChanged = false;
-                byte[] currentValues = uniformsTables.Entries[selectedFaction.Index].Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
-                undoStack.Push((currentValues, "uniforms"));
+            colorChanged = false;
+            FactionItem item = (FactionItem)factionsListView.SelectedItem;
 
-                byte[] colorValues = action.Item1.Skip(9).ToArray();
-                uniformsPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[0], colorValues[1], colorValues[2]);
-                uniformsSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[3], colorValues[4], colorValues[5]);
-                uniformsTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[6], colorValues[7], colorValues[8]);
+            DBRow row = currentUniformsTables.Entries[item.Index];
+            byte[] colorValues = row.Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
+            uniformsPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[0], colorValues[1], colorValues[2]);
+            uniformsSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[3], colorValues[4], colorValues[5]);
+            uniformsTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[6], colorValues[7], colorValues[8]);
 
-                ColorsToUniformsTables(selectedFaction.Index, uniformsPrimaryColorPicker.SelectedColor.Value, uniformsSecondaryColorPicker.SelectedColor.Value, uniformsTertiaryColorPicker.SelectedColor.Value);
-                colorChanged = true;
-            }
+            ColorsToUniformsTables(selectedFaction.Index, uniformsPrimaryColorPicker.SelectedColor.Value, uniformsSecondaryColorPicker.SelectedColor.Value, uniformsTertiaryColorPicker.SelectedColor.Value);
+            colorChanged = true;
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedFactionImage"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedFactionName"));
+
+            undoStack.Clear();
+            redoStack.Clear();
         }
 
         private void Undo(object sender, ExecutedRoutedEventArgs e)
@@ -452,36 +414,6 @@ namespace TWW2_Faction_Colors_Editor
             FilterText = "";
         }
 
-        private void ColorsToBannerTables(int index, params Color[] colors)
-        {
-            bannerTables.Entries[index][1].Value = colors[0].B.ToString();
-            bannerTables.Entries[index][2].Value = colors[0].G.ToString();
-            bannerTables.Entries[index][3].Value = colors[0].R.ToString();
-            bannerTables.Entries[index][4].Value = colors[1].B.ToString();
-            bannerTables.Entries[index][5].Value = colors[1].G.ToString();
-            bannerTables.Entries[index][6].Value = colors[1].R.ToString();
-            bannerTables.Entries[index][8].Value = colors[2].B.ToString();
-            bannerTables.Entries[index][9].Value = colors[2].G.ToString();
-            bannerTables.Entries[index][10].Value = colors[2].R.ToString();
-
-            factions[factions.IndexOf(selectedFaction)].Modified = !vanillaBannersTables.Entries[index].SequenceEqual(bannerTables.Entries[index]) || !vanillaUniformsTables.Entries[index].SequenceEqual(uniformsTables.Entries[index]);
-        }
-
-        private void ColorsToUniformsTables(int index, params Color[] colors)
-        {
-            uniformsTables.Entries[index][1].Value = colors[0].R.ToString();
-            uniformsTables.Entries[index][2].Value = colors[0].G.ToString();
-            uniformsTables.Entries[index][3].Value = colors[0].B.ToString();
-            uniformsTables.Entries[index][4].Value = colors[1].R.ToString();
-            uniformsTables.Entries[index][5].Value = colors[1].G.ToString();
-            uniformsTables.Entries[index][6].Value = colors[1].B.ToString();
-            uniformsTables.Entries[index][7].Value = colors[2].R.ToString();
-            uniformsTables.Entries[index][8].Value = colors[2].G.ToString();
-            uniformsTables.Entries[index][9].Value = colors[2].B.ToString();
-
-            factions[factions.IndexOf(selectedFaction)].Modified = !vanillaBannersTables.Entries[index].SequenceEqual(bannerTables.Entries[index]) || !vanillaUniformsTables.Entries[index].SequenceEqual(uniformsTables.Entries[index]);
-        }
-
         #region "Drag drop"
 
         private void factionsListView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -523,6 +455,7 @@ namespace TWW2_Faction_Colors_Editor
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             FactionItem item = (FactionItem)dropInfo.Data;
+            colorChanged = false;
             if (((GroupBox)dropInfo.VisualTarget).Header.ToString() == "Banner" )
             {
                 DBRow row = vanillaBannersTables.Entries[item.Index];
@@ -530,6 +463,13 @@ namespace TWW2_Faction_Colors_Editor
                 bannerPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[2], colorValues[1], colorValues[0]);
                 bannerSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[5], colorValues[4], colorValues[3]);
                 bannerTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[8], colorValues[7], colorValues[6]);
+
+                int index = selectedFaction.Index;
+                byte[] values = bannerTables.Entries[index].Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
+                undoStack.Push((values, "banner"));
+                redoStack.Clear();
+
+                ColorsToBannerTables(index, bannerPrimaryColorPicker.SelectedColor.Value, bannerSecondaryColorPicker.SelectedColor.Value, bannerTertiaryColorPicker.SelectedColor.Value);
             }
             else if (((GroupBox)dropInfo.VisualTarget).Header.ToString() == "Uniforms")
             {
@@ -538,7 +478,78 @@ namespace TWW2_Faction_Colors_Editor
                 uniformsPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[0], colorValues[1], colorValues[2]);
                 uniformsSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[3], colorValues[4], colorValues[5]);
                 uniformsTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[6], colorValues[7], colorValues[8]);
+
+                int index = selectedFaction.Index;
+                byte[] values = uniformsTables.Entries[index].Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
+                undoStack.Push((values, "uniforms"));
+                redoStack.Clear();
+
+                ColorsToUniformsTables(index, uniformsPrimaryColorPicker.SelectedColor.Value, uniformsSecondaryColorPicker.SelectedColor.Value, uniformsTertiaryColorPicker.SelectedColor.Value);
             }
+            colorChanged = true;
+        }
+
+        #endregion
+
+        #region "Utilities"
+
+        private void ColorsToBannerTables(int index, params Color[] colors)
+        {
+            bannerTables.Entries[index][1].Value = colors[0].B.ToString();
+            bannerTables.Entries[index][2].Value = colors[0].G.ToString();
+            bannerTables.Entries[index][3].Value = colors[0].R.ToString();
+            bannerTables.Entries[index][4].Value = colors[1].B.ToString();
+            bannerTables.Entries[index][5].Value = colors[1].G.ToString();
+            bannerTables.Entries[index][6].Value = colors[1].R.ToString();
+            bannerTables.Entries[index][8].Value = colors[2].B.ToString();
+            bannerTables.Entries[index][9].Value = colors[2].G.ToString();
+            bannerTables.Entries[index][10].Value = colors[2].R.ToString();
+
+            factions[factions.IndexOf(selectedFaction)].Modified = !vanillaBannersTables.Entries[index].SequenceEqual(bannerTables.Entries[index]) || !vanillaUniformsTables.Entries[index].SequenceEqual(uniformsTables.Entries[index]);
+        }
+
+        private void ColorsToUniformsTables(int index, params Color[] colors)
+        {
+            uniformsTables.Entries[index][1].Value = colors[0].R.ToString();
+            uniformsTables.Entries[index][2].Value = colors[0].G.ToString();
+            uniformsTables.Entries[index][3].Value = colors[0].B.ToString();
+            uniformsTables.Entries[index][4].Value = colors[1].R.ToString();
+            uniformsTables.Entries[index][5].Value = colors[1].G.ToString();
+            uniformsTables.Entries[index][6].Value = colors[1].B.ToString();
+            uniformsTables.Entries[index][7].Value = colors[2].R.ToString();
+            uniformsTables.Entries[index][8].Value = colors[2].G.ToString();
+            uniformsTables.Entries[index][9].Value = colors[2].B.ToString();
+
+            factions[factions.IndexOf(selectedFaction)].Modified = !vanillaBannersTables.Entries[index].SequenceEqual(bannerTables.Entries[index]) || !vanillaUniformsTables.Entries[index].SequenceEqual(uniformsTables.Entries[index]);
+        }
+
+        private string GetGamePath()
+        {
+            RegistryKey regKey = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
+            if (regKey != null)
+            {
+                string steamPath = regKey.GetValue("SteamPath").ToString();
+                //Gets a list of all steam library folder
+                string[] configFile = File.ReadAllLines(Path.Combine(steamPath, "config\\config.vdf"));
+                List<string> steamLibraryPaths = new List<string>();
+                steamLibraryPaths.Add(steamPath.Replace("/", "\\"));
+                foreach (var item in configFile)
+                {
+                    if (item.Contains("BaseInstallFolder"))
+                    {
+                        steamLibraryPaths.Add(item.Split(new char[] { '"' })[3].Replace("\"", "").Replace("\\\\", "\\"));
+                    }
+                }
+                //Gets a list of all installed Steam games
+                foreach (var libraryPath in steamLibraryPaths)
+                {
+                    foreach (var directory in Directory.GetDirectories(Path.Combine(libraryPath, "SteamApps\\common")))
+                    {
+                        if (directory.EndsWith("Total War WARHAMMER II")) return directory;
+                    }
+                }
+            }
+            return null;
         }
 
         #endregion
