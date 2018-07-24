@@ -1,0 +1,146 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:TWW2_Faction_Colors_Editor"
+        x:Name="window" x:Class="TWW2_Faction_Colors_Editor.MainWindow"
+        mc:Ignorable="d"
+        Title="Total War Warhammer II Faction Colors Editor" Height="468.296" Width="517.199" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#333333" WindowStyle="SingleBorderWindow" Foreground="#FFC5C5C5">
+
+    <Window.Resources>
+        <Storyboard x:Key="SavedAnimationIn">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="Margin" BeginTime="00:00:00">
+                <SplineThicknessKeyFrame KeyTime="00:00:00" Value="203,25,203,-25" />
+                <SplineThicknessKeyFrame KeyTime="00:00:00.3" Value="203, 0, 203, 0" />
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SavedAnimationOut">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="Margin" BeginTime="00:00:00">
+                <SplineThicknessKeyFrame KeyTime="00:00:00" Value="164, 0, 164, 0" />
+                <SplineThicknessKeyFrame KeyTime="00:00:00.3" Value="164, -25, 164, 25" />
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SavedAnimationInRev">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="Margin" BeginTime="00:00:00">
+                <SplineThicknessKeyFrame KeyTime="00:00:00" Value="203,0,203,0" />
+                <SplineThicknessKeyFrame KeyTime="00:00:00.3" Value="203,25,203,-25" />
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SavedAnimationOutRev">
+            <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="Margin" BeginTime="00:00:00">
+                <SplineThicknessKeyFrame KeyTime="00:00:00" Value="164, -25, 164, 25" />
+                <SplineThicknessKeyFrame KeyTime="00:00:00.3" Value="164, 0, 164, 0" />
+            </ThicknessAnimationUsingKeyFrames>
+        </Storyboard>
+    </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:MainWindow.UndoCommand}" Executed="Undo"/>
+        <CommandBinding Command="{x:Static local:MainWindow.RedoCommand}" Executed="Redo"/>
+    </Window.CommandBindings>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" GlassFrameThickness="0,0,0,1" ResizeBorderThickness="0" />
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition Height="32*"/>
+            <RowDefinition Height="406*"/>
+            <RowDefinition Height="32*"/>
+        </Grid.RowDefinitions>
+        <GroupBox x:Name="bannerGroupBox" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" Header="Banner" HorizontalAlignment="Left" Margin="240,43,0,0" Width="270" Height="163" VerticalAlignment="Top" Grid.Row="2" Foreground="{DynamicResource TextColor}">
+            <Grid Margin="0" Background="Transparent">
+                <xctk:ColorPicker x:Name="bannerPrimaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" Margin="72,5,0,0" ShowTabHeaders="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Closed="bannersColorPicker_changedColor" />
+                <xctk:ColorPicker x:Name="bannerSecondaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Margin="72,40,0,0" ShowTabHeaders="False" Closed="bannersColorPicker_changedColor" />
+                <xctk:ColorPicker x:Name="bannerTertiaryColorPicker" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" Margin="72,75,0,0" ShowTabHeaders="False" Closed="bannersColorPicker_changedColor" />
+                <Button x:Name="buttonVanillaBanner" Content="Vanilla" HorizontalAlignment="Left" Margin="133,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonVanillaBanner_Click"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Primary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,46,0,0" TextWrapping="Wrap" Text="Secondary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" Text="Tertiary" VerticalAlignment="Top"/>
+                <Button x:Name="buttonUndoBanner" Content="Undo changes" HorizontalAlignment="Left" Margin="9,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonUndoBanner_Click"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="uniformGroupBox" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" Header="Uniforms" HorizontalAlignment="Left" Margin="240,212,0,0" Width="270" Grid.Row="2" Height="163" VerticalAlignment="Top" Foreground="{DynamicResource TextColor}">
+            <Grid Background="Transparent" Margin="0">
+                <xctk:ColorPicker x:Name="uniformsPrimaryColorPicker" HorizontalAlignment="Left" Margin="72,5,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor" />
+                <xctk:ColorPicker x:Name="uniformsSecondaryColorPicker" HorizontalAlignment="Left" Margin="72,40,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor"/>
+                <xctk:ColorPicker x:Name="uniformsTertiaryColorPicker" HorizontalAlignment="Left" Margin="72,75,0,0" VerticalAlignment="Top" Height="26" Width="177" UsingAlphaChannel="False" ShowStandardColors="False" ShowAvailableColors="False" ColorMode="ColorCanvas" ShowTabHeaders="False" Closed="uniformsColorPicker_changedColor" />
+                <Button x:Name="buttonVanillaUniforms" Content="Vanilla" HorizontalAlignment="Left" Margin="132,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonVanillaUniforms_Click"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Primary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,46,0,0" TextWrapping="Wrap" Text="Secondary" VerticalAlignment="Top"/>
+                <TextBlock HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" Text="Tertiary" VerticalAlignment="Top"/>
+                <Button x:Name="buttonUndoUniforms" Content="Undo changes" HorizontalAlignment="Left" Margin="9,110,0,0" VerticalAlignment="Top" Width="116" Height="24" Click="buttonUndoUniforms_Click"/>
+            </Grid>
+        </GroupBox>
+        <Grid Grid.Row="1" Background="#FF212020" MouseDown="Grid_MouseDown">
+            <Button x:Name="buttonClose" Content="X" Height="32" VerticalAlignment="Top" Click="buttonClose_Click" FontWeight="Bold" FontSize="14" Style="{DynamicResource TitleBarButton}" HorizontalAlignment="Right" Width="30" Foreground="#FFC12222"/>
+            <Button x:Name="buttonMinimize" Content="_____" Height="32" Margin="0,0,29,0" VerticalAlignment="Top" Click="buttonMinimize_Click" Style="{DynamicResource TitleBarButton}" HorizontalAlignment="Right" Width="30" Foreground="#FFDEDEDE" FontWeight="Bold" FontSize="8" FontFamily="Calibri"/>
+            <Label x:Name="labelTitle" Content="TWW2 Faction Colors Editor" Height="30" Margin="164,0" VerticalAlignment="Top" Foreground="#FFCBCBCB" Background="{x:Null}" FontSize="14"/>
+            <Label x:Name="labelSaved" Content="Changes saved!" Height="30" Margin="203,25,203,-25" VerticalAlignment="Top" Foreground="#FFCBCBCB" Background="{x:Null}" FontSize="14"/>
+            <Grid Margin="203,35,203,-25" Background="#333333" />
+        </Grid>
+        <Grid HorizontalAlignment="Left" Width="270" Height="32" Margin="240,5,0,0" Grid.Row="2" VerticalAlignment="Top">
+            <Button x:Name="buttonUndo" Width="25" Height="25" Command="{x:Static local:MainWindow.UndoCommand}" Style="{DynamicResource TitleBarButton}" HorizontalAlignment="Left" Margin="-3,0,0,-1" VerticalAlignment="Bottom" ToolTip="Undo (CTRL+Z)" >
+                <Image Height="16" Width="16" Source="undo.png" />
+            </Button>
+            <Button x:Name="buttonRedo"  Width="25" Height="25" Background="#333333" Command="{x:Static local:MainWindow.RedoCommand}" Style="{DynamicResource TitleBarButton}" HorizontalAlignment="Left" Margin="20,8,0,0" ToolTip="Redo (CTRL+S)">
+                <Image Source="undo.png" Height="16" Width="16" RenderTransformOrigin="0.5,0.5" >
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="1" ScaleX="-1"/>
+                            <SkewTransform AngleY="0" AngleX="0"/>
+                            <RotateTransform Angle="0"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+            </Button>
+            <StackPanel x:Name="currentFactionPanel" HorizontalAlignment="Center" Width="Auto" Orientation="Horizontal">
+                <Image Source="{Binding SelectedFactionImage}" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding SelectedFactionName}" VerticalAlignment="Center" MaxWidth="140" TextTrimming="CharacterEllipsis" Foreground="#FF848FD4" Padding="4, 0, 0, 0" FontSize="14" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="3" Background="#FF2C2C2C">
+            <CheckBox x:Name="checkBoxEnable" HorizontalAlignment="Left" Height="38" Margin="332,-3,0,-5" VerticalAlignment="Top" Width="53" Style="{DynamicResource CheckBoxSwitchStyle}" Checked="checkBoxEnable_CheckedChanged" Unchecked="checkBoxEnable_CheckedChanged"/>
+            <Button x:Name="buttonSave" Content="Save changes" HorizontalAlignment="Left" Margin="405,4,0,0" VerticalAlignment="Top" Width="101" Click="buttonSave_Click" Height="24"/>
+            <TextBlock HorizontalAlignment="Left" Height="15" Margin="277,8,0,0" Text="Enabled:" VerticalAlignment="Top" Width="51"/>
+            <TextBox x:Name="factionTextBox" VerticalContentAlignment="Center" Text="{Binding FilterText, ElementName=window, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="199" Padding="4,0,0,0" Margin="5,1,0,-1" MaxLength="30"/>
+            <TextBlock IsHitTestVisible="False" Text="Search..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="12,8,0,6" Foreground="DarkGray">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=factionTextBox}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Button x:Name="buttonClear" HorizontalAlignment="Left" Margin="204,3,0,0" VerticalAlignment="Top" Click="buttonClear_Click">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ClearButton}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=factionTextBox}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+        <ListView x:Name="factionsListView" dd:DragDrop.IsDragSource="True" dd:DragDrop.UseDefaultDragAdorner="True" ItemsSource="{Binding SourceCollection, ElementName=window}" HorizontalAlignment="Left" Width="235" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="factionsListView_SelectionChanged" Grid.Row="2" ItemContainerStyle="{DynamicResource listViewItemStyle}" MouseLeftButtonUp="factionsListView_MouseLeftButtonUp" PreviewMouseDown="factionsListView_PreviewMouseDown" Background="{x:Null}" Margin="0,1,0,0" BorderBrush="{x:Null}" IsSynchronizedWithCurrentItem="False" ScrollViewer.CanContentScroll="True">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
+    </Grid>
+</Window>
