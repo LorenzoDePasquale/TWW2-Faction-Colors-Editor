@@ -30,5 +30,7 @@ The program creates a .pack file with the new color values and adds it to the TW
 ## Known problems
 For some reason changes to the elves banner colors won't be reflected in the game; I've tried to change the color manually without this tool but couldn't manage to do it, so I have no idea how to fix this.
 
+Changes made by this program could be overwrited by some faction reskins, since those too change factions colors;
+
 ## Credits
 Special thanks to the team behind the [Pack File Manager](https://sourceforge.net/projects/packfilemanager/) project
