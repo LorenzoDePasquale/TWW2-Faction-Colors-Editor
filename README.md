@@ -28,7 +28,7 @@ This program allows to customize banner and uniform colors of every faction in t
 The program creates a .pack file with the new color values and adds it to the TW Launcher mod list, already enabled.
 
 ## Known problems
-For some reason changes to the elves banner colors won't be reflected in the game; I've tried to change the color manually without this tool but couldn't manage to do it, so I have no idea how to fix this.
+For some reason changes to the High Elves banner colors won't be reflected in the campaign; I've tried to change the color manually without this tool but couldn't manage to do it, so I have no idea how to fix this.
 
 Changes made by this program could be overwrited by some faction reskins, since those too change factions colors;
 
