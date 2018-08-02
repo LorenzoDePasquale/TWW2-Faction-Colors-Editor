@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -113,7 +114,9 @@ namespace TWW2_Faction_Colors_Editor
             RegistryKey regKey = Registry.CurrentUser.OpenSubKey(@"Software\The Creative Assembly\Launcher\594570\mods");
             if (regKey.GetValue("faction_colors.pack") != null && File.Exists(gamePath + "\\data\\faction_colors.pack"))
             {
+                checkBoxEnable.Checked -= checkBoxEnable_CheckedChanged;
                 checkBoxEnable.IsChecked = true;
+                checkBoxEnable.Checked += checkBoxEnable_CheckedChanged;
             }
         }
 
@@ -157,10 +160,12 @@ namespace TWW2_Faction_Colors_Editor
             packFile.Files[0].Data = DBDecoder.Encode("faction_banners_tables", bannerTables);
             packFile.Files[1].Data = DBDecoder.Encode("faction_uniform_colours_tables", uniformsTables);
             codec.Save(packFile);
-            if (checkBoxEnable.IsEnabled) File.Copy("faction_colors.pack", gamePath + "\\data\\faction_colors.pack", true);
 
             currentBannerTables = DBDecoder.Decode("faction_banners_tables", packFile.Files[0].Data);
             currentUniformsTables = DBDecoder.Decode("faction_uniform_colours_tables", packFile.Files[1].Data);
+
+            if (checkBoxEnable.IsChecked == true)
+                CreateModdedPackFile();
 
             Storyboard storyboardIn = FindResource("SavedAnimationIn") as Storyboard;
             Storyboard.SetTarget(storyboardIn, labelSaved);
@@ -169,7 +174,7 @@ namespace TWW2_Faction_Colors_Editor
             Storyboard.SetTarget(storyboardOut, labelTitle);
             storyboardOut.Begin();
 
-            Task.Delay(3000).ContinueWith((t) =>
+            Task.Delay(2000).ContinueWith((t) =>
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
@@ -218,13 +223,13 @@ namespace TWW2_Faction_Colors_Editor
         private void buttonVanillaBanner_Click(object sender, RoutedEventArgs e)
         {
             if (factionsListView.SelectedIndex == -1) return;
+
             FactionItem item = (FactionItem)factionsListView.SelectedItem;
             DBRow row = vanillaBannersTables.Entries[item.Index];
             byte[] colorValues = row.Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
             bannerPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[2], colorValues[1], colorValues[0]);
             bannerSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[5], colorValues[4], colorValues[3]);
             bannerTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[8], colorValues[7], colorValues[6]);
-            factions[factionsListView.SelectedIndex].Modified = false;
 
             ColorsToBannerTables(selectedFaction.Index, bannerPrimaryColorPicker.SelectedColor.Value, bannerSecondaryColorPicker.SelectedColor.Value, bannerTertiaryColorPicker.SelectedColor.Value);
         }
@@ -232,13 +237,14 @@ namespace TWW2_Faction_Colors_Editor
         private void buttonVanillaUniforms_Click(object sender, RoutedEventArgs e)
         {
             if (factionsListView.SelectedIndex == -1) return;
+
             FactionItem item = (FactionItem)factionsListView.SelectedItem;
             DBRow row = vanillaUniformsTables.Entries[item.Index];
             byte[] colorValues = row.Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
             uniformsPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[0], colorValues[1], colorValues[2]);
             uniformsSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[3], colorValues[4], colorValues[5]);
             uniformsTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[6], colorValues[7], colorValues[8]);
-            factions[factionsListView.SelectedIndex].Modified = false;
+
             ColorsToUniformsTables(selectedFaction.Index, uniformsPrimaryColorPicker.SelectedColor.Value, uniformsSecondaryColorPicker.SelectedColor.Value, uniformsTertiaryColorPicker.SelectedColor.Value);
         }
 
@@ -266,11 +272,6 @@ namespace TWW2_Faction_Colors_Editor
             ColorsToUniformsTables(index, uniformsPrimaryColorPicker.SelectedColor.Value, uniformsSecondaryColorPicker.SelectedColor.Value, uniformsTertiaryColorPicker.SelectedColor.Value);
         }
 
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed) DragMove();
-        }
-
         private void buttonClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -281,7 +282,8 @@ namespace TWW2_Faction_Colors_Editor
             //TODO: check for UAC
             if (checkBoxEnable.IsChecked == true)
             {
-                File.Copy("faction_colors.pack", gamePath + "\\data\\faction_colors.pack", true);
+                CreateModdedPackFile();
+
                 RegistryKey regKey = Registry.CurrentUser.OpenSubKey(@"Software\The Creative Assembly\Launcher\594570\mods", true);
                 regKey.SetValue("faction_colors.pack", "0|0|1|65540", RegistryValueKind.String);
 
@@ -414,6 +416,12 @@ namespace TWW2_Faction_Colors_Editor
             FilterText = "";
         }
 
+        private void buttonLaunchGame_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("steam://rungameid/594570");
+            Close();
+        }
+
         #region "Drag drop"
 
         private void factionsListView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -441,6 +449,11 @@ namespace TWW2_Faction_Colors_Editor
         {
             if (e.GetPosition(factionsListView).X > 200) e.Handled = false;
             else e.Handled = true;
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed) DragMove();
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)
@@ -521,6 +534,34 @@ namespace TWW2_Faction_Colors_Editor
             uniformsTables.Entries[index][9].Value = colors[2].B.ToString();
 
             factions[factions.IndexOf(selectedFaction)].Modified = !vanillaBannersTables.Entries[index].SequenceEqual(bannerTables.Entries[index]) || !vanillaUniformsTables.Entries[index].SequenceEqual(uniformsTables.Entries[index]);
+        }
+
+        private void CreateModdedPackFile()
+        {
+            File.Copy("faction_colors.pack", gamePath + "\\data\\faction_colors.pack", true);
+
+            PackFile newPackFile = codec.Open(gamePath + "\\data\\faction_colors.pack");
+            DBFile newDb = new DBFile(bannerTables.Header, bannerTables.CurrentType);
+            for (int i = 0; i < bannerTables.Entries.Count; i++)
+            {
+                if (!vanillaBannersTables.Entries[i].SequenceEqual(bannerTables.Entries[i]))
+                {
+                    newDb.Entries.Add(bannerTables.Entries[i]);
+                }
+            }
+            newPackFile.Files[0].Data = DBDecoder.Encode("faction_banners_tables", newDb);
+
+            newDb = new DBFile(uniformsTables.Header, uniformsTables.CurrentType);
+            for (int i = 0; i < uniformsTables.Entries.Count; i++)
+            {
+                if (!vanillaUniformsTables.Entries[i].SequenceEqual(uniformsTables.Entries[i]))
+                {
+                    newDb.Entries.Add(uniformsTables.Entries[i]);
+                }
+            }
+            newPackFile.Files[1].Data = DBDecoder.Encode("faction_uniform_colours_tables", newDb);
+
+            codec.Save(newPackFile);
         }
 
         private string GetGamePath()

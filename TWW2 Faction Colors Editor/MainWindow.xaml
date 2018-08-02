@@ -106,11 +106,11 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="3" Background="#FF2C2C2C">
-            <CheckBox x:Name="checkBoxEnable" HorizontalAlignment="Left" Height="38" Margin="332,-3,0,-5" VerticalAlignment="Top" Width="53" Style="{DynamicResource CheckBoxSwitchStyle}" Checked="checkBoxEnable_CheckedChanged" Unchecked="checkBoxEnable_CheckedChanged"/>
-            <Button x:Name="buttonSave" Content="Save changes" HorizontalAlignment="Left" Margin="405,4,0,0" VerticalAlignment="Top" Width="101" Click="buttonSave_Click" Height="24"/>
-            <TextBlock HorizontalAlignment="Left" Height="15" Margin="277,8,0,0" Text="Enabled:" VerticalAlignment="Top" Width="51"/>
-            <TextBox x:Name="factionTextBox" VerticalContentAlignment="Center" Text="{Binding FilterText, ElementName=window, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="199" Padding="4,0,0,0" Margin="5,1,0,-1" MaxLength="30"/>
-            <TextBlock IsHitTestVisible="False" Text="Search..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="12,8,0,6" Foreground="DarkGray">
+            <CheckBox x:Name="checkBoxEnable" HorizontalAlignment="Left" Height="38" Margin="220,-3,0,-5" VerticalAlignment="Top" Width="53" Style="{DynamicResource CheckBoxSwitchStyle}" Checked="checkBoxEnable_CheckedChanged" Unchecked="checkBoxEnable_CheckedChanged"/>
+            <Button x:Name="buttonSave" Content="Save changes" HorizontalAlignment="Left" Margin="410,4,0,0" VerticalAlignment="Top" Width="95" Click="buttonSave_Click" Height="24"/>
+            <TextBlock HorizontalAlignment="Left" Height="15" Margin="170,8,0,0" Text="Enabled:" VerticalAlignment="Top" Width="51"/>
+            <TextBox x:Name="factionTextBox" VerticalContentAlignment="Center" Text="{Binding FilterText, ElementName=window, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="118" Padding="4,0,0,0" Margin="3,1,0,-1" MaxLength="17"/>
+            <TextBlock IsHitTestVisible="False" Text="Search..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,8,0,6" Foreground="DarkGray">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -122,18 +122,19 @@
                     </Style>
                 </TextBlock.Style>
             </TextBlock>
-            <Button x:Name="buttonClear" HorizontalAlignment="Left" Margin="204,3,0,0" VerticalAlignment="Top" Click="buttonClear_Click">
+            <Button x:Name="buttonClear" HorizontalAlignment="Left" Margin="118,3,0,0" VerticalAlignment="Top" Click="buttonClear_Click">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ClearButton}">
                         <Setter Property="Visibility" Value="Visible"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Text, ElementName=factionTextBox}" Value="">
-                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="Visibility" Value="Hidden"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
             </Button>
+            <Button x:Name="buttonLaunchGame" Content="Launch game" HorizontalAlignment="Left" Margin="306,4,0,0" VerticalAlignment="Top" Width="95" Height="24" Click="buttonLaunchGame_Click"/>
         </Grid>
         <ListView x:Name="factionsListView" dd:DragDrop.IsDragSource="True" dd:DragDrop.UseDefaultDragAdorner="True" ItemsSource="{Binding SourceCollection, ElementName=window}" HorizontalAlignment="Left" Width="235" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="factionsListView_SelectionChanged" Grid.Row="2" ItemContainerStyle="{DynamicResource listViewItemStyle}" MouseLeftButtonUp="factionsListView_MouseLeftButtonUp" PreviewMouseDown="factionsListView_PreviewMouseDown" Background="{x:Null}" Margin="0,1,0,0" BorderBrush="{x:Null}" IsSynchronizedWithCurrentItem="False" ScrollViewer.CanContentScroll="True">
             <ListView.ItemsPanel>
