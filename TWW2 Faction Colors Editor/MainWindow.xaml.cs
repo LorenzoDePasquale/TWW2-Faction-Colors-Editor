@@ -141,16 +141,17 @@ namespace TWW2_Faction_Colors_Editor
             }
 
             List<FactionItem> temp = new List<FactionItem>();
-            for (int i = 0; i < factionNames.Count; i++)
+            for (int i = 0; i < bannerTables.Entries.Count; i++)
             {
                 string imagePath = $"flags/{bannerTables.Entries[i][0].Value}/mon_64.png";
-                if (File.Exists(imagePath))
+                if (File.Exists(imagePath) && factionNames.ContainsKey(bannerTables.Entries[i][0].Value))
                 {
                     string factionName = factionNames[bannerTables.Entries[i][0].Value];
-                    bool modified = !vanillaBannersTables.Entries[i].SequenceEqual(bannerTables.Entries[i]) && !vanillaUniformsTables.Entries.SequenceEqual(uniformsTables.Entries);
+                    bool modified = !vanillaBannersTables.Entries[i].SequenceEqual(bannerTables.Entries[i]) || !vanillaUniformsTables.Entries[i].SequenceEqual(uniformsTables.Entries[i]);
                     temp.Add(new FactionItem(imagePath, factionName, i, modified));
                 }
             }
+
             temp.Sort((x, y) => String.Compare(x.Name, y.Name));
             temp.ForEach(x => factions.Add(x));
         }
