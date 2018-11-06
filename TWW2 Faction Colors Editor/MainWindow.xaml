@@ -82,7 +82,7 @@
             <Button x:Name="buttonMinimize" Content="_____" Height="32" Margin="0,0,29,0" VerticalAlignment="Top" Click="buttonMinimize_Click" Style="{DynamicResource TitleBarButton}" HorizontalAlignment="Right" Width="30" Foreground="#FFDEDEDE" FontWeight="Bold" FontSize="8" FontFamily="Calibri"/>
             <Label x:Name="labelTitle" Content="TWW2 Faction Colors Editor" Height="30" Margin="164,0" VerticalAlignment="Top" Foreground="#FFCBCBCB" Background="{x:Null}" FontSize="14"/>
             <Label x:Name="labelSaved" Content="Changes saved!" Height="30" Margin="203,25,203,-25" VerticalAlignment="Top" Foreground="#FFCBCBCB" Background="{x:Null}" FontSize="14"/>
-            <Grid Margin="203,35,203,-25" Background="#333333" />
+            <Grid Margin="203,32,203,-25" Background="#333333" />
         </Grid>
         <Grid HorizontalAlignment="Left" Width="270" Height="32" Margin="240,5,0,0" Grid.Row="2" VerticalAlignment="Top">
             <Button x:Name="buttonUndo" Width="25" Height="25" Command="{x:Static local:MainWindow.UndoCommand}" Style="{DynamicResource TitleBarButton}" HorizontalAlignment="Left" Margin="-3,0,0,-1" VerticalAlignment="Bottom" ToolTip="Undo (CTRL+Z)" >
@@ -135,7 +135,7 @@
                 </Button.Style>
             </Button>
         </Grid>
-        <ListView x:Name="factionsListView" dd:DragDrop.IsDragSource="True" dd:DragDrop.UseDefaultDragAdorner="True" ItemsSource="{Binding SourceCollection, ElementName=window}" HorizontalAlignment="Left" Width="235" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="factionsListView_SelectionChanged" Grid.Row="2" ItemContainerStyle="{DynamicResource listViewItemStyle}" MouseLeftButtonUp="factionsListView_MouseLeftButtonUp" PreviewMouseDown="factionsListView_PreviewMouseDown" Background="{x:Null}" Margin="0,1,0,0" BorderBrush="{x:Null}" IsSynchronizedWithCurrentItem="False" ScrollViewer.CanContentScroll="True">
+        <ListView x:Name="factionsListView" dd:DragDrop.IsDragSource="True" dd:DragDrop.UseDefaultDragAdorner="True" ItemsSource="{Binding SourceCollection, ElementName=window}" HorizontalAlignment="Left" Width="235" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="factionsListView_SelectionChanged" Grid.Row="2" ItemContainerStyle="{DynamicResource listViewItemStyle}" MouseLeftButtonUp="factionsListView_MouseLeftButtonUp" PreviewMouseDown="factionsListView_PreviewMouseDown" Background="{x:Null}" Margin="0,1,0,0" BorderBrush="{x:Null}" IsSynchronizedWithCurrentItem="False" ScrollViewer.CanContentScroll="False">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Vertical" />

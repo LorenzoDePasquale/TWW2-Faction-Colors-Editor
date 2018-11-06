@@ -15,7 +15,7 @@ namespace TWW2_Faction_Colors_Editor
         public bool Modified
         {
             get { return _modified; }
-            set { _modified = value; PropertyChanged(this, new PropertyChangedEventArgs("Modified")); }
+            set { _modified = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Modified")); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

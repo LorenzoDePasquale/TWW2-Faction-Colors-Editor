@@ -169,7 +169,7 @@ namespace TWW2_Faction_Colors_Editor
             Storyboard.SetTarget(storyboardOut, labelTitle);
             storyboardOut.Begin();
 
-            Task.Delay(3000).ContinueWith((t) =>
+            Task.Delay(2500).ContinueWith((t) =>
             {
                 App.Current.Dispatcher.Invoke((Action)delegate
                 {
@@ -217,28 +217,24 @@ namespace TWW2_Faction_Colors_Editor
 
         private void buttonVanillaBanner_Click(object sender, RoutedEventArgs e)
         {
-            if (factionsListView.SelectedIndex == -1) return;
-            FactionItem item = (FactionItem)factionsListView.SelectedItem;
+            FactionItem item = factions[factions.IndexOf(selectedFaction)];
             DBRow row = vanillaBannersTables.Entries[item.Index];
             byte[] colorValues = row.Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
             bannerPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[2], colorValues[1], colorValues[0]);
             bannerSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[5], colorValues[4], colorValues[3]);
             bannerTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[8], colorValues[7], colorValues[6]);
-            factions[factionsListView.SelectedIndex].Modified = false;
 
             ColorsToBannerTables(selectedFaction.Index, bannerPrimaryColorPicker.SelectedColor.Value, bannerSecondaryColorPicker.SelectedColor.Value, bannerTertiaryColorPicker.SelectedColor.Value);
         }
 
         private void buttonVanillaUniforms_Click(object sender, RoutedEventArgs e)
         {
-            if (factionsListView.SelectedIndex == -1) return;
-            FactionItem item = (FactionItem)factionsListView.SelectedItem;
+            FactionItem item = factions[factions.IndexOf(selectedFaction)];
             DBRow row = vanillaUniformsTables.Entries[item.Index];
             byte[] colorValues = row.Where(x => x.Info.TypeCode == TypeCode.Int32).Select(x => Byte.Parse(x.Value)).ToArray();
             uniformsPrimaryColorPicker.SelectedColor = Color.FromRgb(colorValues[0], colorValues[1], colorValues[2]);
             uniformsSecondaryColorPicker.SelectedColor = Color.FromRgb(colorValues[3], colorValues[4], colorValues[5]);
             uniformsTertiaryColorPicker.SelectedColor = Color.FromRgb(colorValues[6], colorValues[7], colorValues[8]);
-            factions[factionsListView.SelectedIndex].Modified = false;
             ColorsToUniformsTables(selectedFaction.Index, uniformsPrimaryColorPicker.SelectedColor.Value, uniformsSecondaryColorPicker.SelectedColor.Value, uniformsTertiaryColorPicker.SelectedColor.Value);
         }
 
