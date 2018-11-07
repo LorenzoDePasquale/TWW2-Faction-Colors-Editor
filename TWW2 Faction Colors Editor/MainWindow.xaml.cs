@@ -144,7 +144,7 @@ namespace TWW2_Faction_Colors_Editor
                 if (File.Exists(imagePath))
                 {
                     string factionName = factionNames[bannerTables.Entries[i][0].Value];
-                    bool modified = !vanillaBannersTables.Entries[i].SequenceEqual(bannerTables.Entries[i]) && !vanillaUniformsTables.Entries.SequenceEqual(uniformsTables.Entries);
+                    bool modified = !vanillaBannersTables.Entries[i].SequenceEqual(bannerTables.Entries[i]) || !vanillaUniformsTables.Entries[i].SequenceEqual(uniformsTables.Entries[i]);
                     temp.Add(new FactionItem(imagePath, factionName, i, modified));
                 }
             }
@@ -171,7 +171,7 @@ namespace TWW2_Faction_Colors_Editor
 
             Task.Delay(2500).ContinueWith((t) =>
             {
-                App.Current.Dispatcher.Invoke((Action)delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
                     Storyboard storyboardInRev = FindResource("SavedAnimationInRev") as Storyboard;
                     Storyboard.SetTarget(storyboardInRev, labelSaved);
