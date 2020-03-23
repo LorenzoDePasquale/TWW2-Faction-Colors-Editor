@@ -1,3 +1,7 @@
+## CURRENTLY OUTDATED!
+
+
+
 # Total War Warhammer II Faction Colors Editor
 
 ## What is it:
